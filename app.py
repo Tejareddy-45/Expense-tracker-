@@ -69,7 +69,7 @@ elif menu == "View Expenses":
             st.success("Deleted successfully! Refresh page.")
 
     else:
-        st.info("No expenses yet!") json
+        st.info("No expenses yet!")
 import os
 
 FILE_NAME = "expenses.json"
