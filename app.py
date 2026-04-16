@@ -138,7 +138,7 @@ elif menu == "Download Report":
 # ------------------ LOGOUT ------------------
 elif menu == "Logout":
     st.session_state.logged_in = False
-    st.success("Logged out! Please refresh.") streamlit as st
+    st.success("Logged out! Please refresh.") 
 import pandas as pd
 from datetime import datetime
 import os
