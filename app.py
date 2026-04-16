@@ -1,5 +1,53 @@
 import streamlit as st
 import pandas as pd
+
+# Page configuration
+st.set_page_config(page_title="Expense Tracker", layout="wide")
+st.title("📊 Personal Expense Tracker")
+
+# Initialize session state for data persistence during the session
+if 'expenses' not in st.session_state:
+    st.session_state.expenses = pd.DataFrame(columns=["Description", "Amount", "Category"])
+
+# Sidebar for Input
+st.sidebar.header("Add New Expense")
+with st.sidebar.form("expense_form", clear_on_submit=True):
+    desc = st.text_input("Description")
+    amt = st.number_input("Amount", min_value=0.0, step=0.01)
+    cat = st.selectbox("Category", ["Food", "Transport", "Tech", "Utilities", "Other"])
+    submit = st.form_submit_button("Add Expense")
+
+    if submit and desc:
+        new_data = pd.DataFrame([[desc, amt, cat]], columns=["Description", "Amount", "Category"])
+        st.session_state.expenses = pd.concat([st.session_state.expenses, new_data], ignore_index=True)
+
+# Main Dashboard
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    st.subheader("Transaction History")
+    if not st.session_state.expenses.empty:
+        st.dataframe(st.session_state.expenses, use_container_width=True)
+    else:
+        st.info("No expenses recorded yet.")
+
+with col2:
+    st.subheader("Summary")
+    if not st.session_state.expenses.empty:
+        total = st.session_state.expenses["Amount"].sum()
+        st.metric("Total Spent", f"${total:,.2f}")
+        
+        # Categorical Breakdown
+        chart_data = st.session_state.expenses.groupby("Category")["Amount"].sum()
+        st.pie_chart(chart_data)
+    else:
+        st.write("Add expenses to see the breakdown.")
+
+# Option to clear data
+if st.button("Clear All Data"):
+    st.session_state.expenses = pd.DataFrame(columns=["Description", "Amount", "Category"])
+    st.rerun() streamlit as st
+import pandas as pd
 from datetime import datetime
 import os
 
