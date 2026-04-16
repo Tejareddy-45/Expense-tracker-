@@ -26,6 +26,146 @@ def save_data(df):
 def login():
     st.title("🔐 Login")
 
+    username = st.text_input("Username", key="login_user")
+    password = st.text_input("Password", type="password", key="login_pass")
+
+    if st.button("Login", key="login_btn"):
+        if username == "admin" and password == "1234":
+            st.session_state.logged_in = True
+            st.success("Login successful!")
+        else:
+            st.error("Invalid credentials")
+
+# Session state
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if not st.session_state.logged_in:
+    login()
+    st.stop()
+
+# ------------------ MAIN APP ------------------
+st.title("💰 Expense Tracker Dashboard")
+
+df = load_data()
+
+# Sidebar
+st.sidebar.title("📌 Menu")
+menu = st.sidebar.radio(
+    "Navigate",
+    ["Add Expense", "View Expenses", "Download Report", "Logout"],
+    key="menu_radio"
+)
+
+# ------------------ ADD EXPENSE ------------------
+if menu == "Add Expense":
+    st.subheader("➕ Add Expense")
+
+    name = st.text_input("Expense Name", key="name_input")
+    amount = st.number_input("Amount", min_value=0.0, key="amount_input")
+    category = st.selectbox(
+        "Category",
+        ["Food", "Travel", "Shopping", "Other"],
+        key="category_input"
+    )
+    date = st.date_input("Date", datetime.now(), key="date_input")
+
+    if st.button("Add Expense", key="add_btn"):
+        if name and amount > 0:
+            new_row = pd.DataFrame({
+                "Name": [name],
+                "Amount": [amount],
+                "Category": [category],
+                "Date": [date]
+            })
+
+            df = pd.concat([df, new_row], ignore_index=True)
+            save_data(df)
+
+            st.success("✅ Expense Added!")
+        else:
+            st.warning("Please enter valid data")
+
+# ------------------ VIEW EXPENSES ------------------
+elif menu == "View Expenses":
+    st.subheader("📊 All Expenses")
+
+    if not df.empty:
+        st.dataframe(df, use_container_width=True)
+
+        total = df["Amount"].sum()
+        st.markdown(f"## 💸 Total Spending: ₹{total}")
+
+        st.subheader("📊 Category-wise Spending")
+        chart = df.groupby("Category")["Amount"].sum()
+        st.bar_chart(chart)
+
+        # Delete option
+        st.subheader("🗑️ Delete Expense")
+        index = st.number_input(
+            "Enter index to delete",
+            min_value=0,
+            max_value=len(df)-1,
+            step=1,
+            key="delete_index"
+        )
+
+        if st.button("Delete", key="delete_btn"):
+            df = df.drop(index).reset_index(drop=True)
+            save_data(df)
+            st.success("Deleted successfully! Refresh page.")
+
+    else:
+        st.info("No expenses yet!")
+
+# ------------------ DOWNLOAD ------------------
+elif menu == "Download Report":
+    st.subheader("📥 Download Your Data")
+
+    if not df.empty:
+        csv = df.to_csv(index=False).encode('utf-8')
+
+        st.download_button(
+            label="Download CSV",
+            data=csv,
+            file_name="expenses.csv",
+            mime="text/csv",
+            key="download_btn"
+        )
+    else:
+        st.warning("No data to download!")
+
+# ------------------ LOGOUT ------------------
+elif menu == "Logout":
+    st.session_state.logged_in = False
+    st.success("Logged out! Please refresh.") streamlit as st
+import pandas as pd
+from datetime import datetime
+import os
+
+# ------------------ CONFIG ------------------
+st.set_page_config(page_title="Expense Tracker", page_icon="💰", layout="wide")
+
+FILE = "expenses.csv"
+
+# ------------------ LOAD DATA ------------------
+def load_data():
+    if os.path.exists(FILE):
+        try:
+            return pd.read_csv(FILE)
+        except:
+            return pd.DataFrame(columns=["Name", "Amount", "Category", "Date"])
+    else:
+        return pd.DataFrame(columns=["Name", "Amount", "Category", "Date"])
+
+# ------------------ SAVE DATA ------------------
+def save_data(df):
+    df.to_csv(FILE, index=False)
+
+# ------------------ LOGIN ------------------
+def login():
+    st.title("🔐 Login")
+
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
 
