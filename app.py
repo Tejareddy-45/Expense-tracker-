@@ -46,7 +46,7 @@ with col2:
 # Option to clear data
 if st.button("Clear All Data"):
     st.session_state.expenses = pd.DataFrame(columns=["Description", "Amount", "Category"])
-    st.rerun() streamlit as st
+    st.rerun()
 import pandas as pd
 from datetime import datetime
 import os
