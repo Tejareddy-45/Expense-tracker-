@@ -1,4 +1,73 @@
-import streamlit as st
+import json
+import os
+
+FILE_NAME = "expenses.json"
+
+# Load existing expenses
+def load_expenses():
+    if os.path.exists(FILE_NAME):
+        with open(FILE_NAME, "r") as file:
+            return json.load(file)
+    return []
+
+# Save expenses
+def save_expenses(expenses):
+    with open(FILE_NAME, "w") as file:
+        json.dump(expenses, file, indent=4)
+
+# Add expense
+def add_expense(expenses):
+    name = input("Enter expense name: ")
+    amount = float(input("Enter amount: "))
+    
+    expense = {"name": name, "amount": amount}
+    expenses.append(expense)
+    
+    save_expenses(expenses)
+    print("✅ Expense added successfully!")
+
+# View expenses
+def view_expenses(expenses):
+    if not expenses:
+        print("No expenses found.")
+        return
+    
+    print("\n📋 All Expenses:")
+    for i, expense in enumerate(expenses, start=1):
+        print(f"{i}. {expense['name']} - ₹{expense['amount']}")
+
+# Total expenses
+def total_expenses(expenses):
+    total = sum(exp["amount"] for exp in expenses)
+    print(f"\n💵 Total Spending: ₹{total}")
+
+# Main menu
+def main():
+    expenses = load_expenses()
+    
+    while True:
+        print("\n====== Expense Tracker ======")
+        print("1. Add Expense")
+        print("2. View Expenses")
+        print("3. Total Expenses")
+        print("4. Exit")
+        
+        choice = input("Enter your choice: ")
+        
+        if choice == "1":
+            add_expense(expenses)
+        elif choice == "2":
+            view_expenses(expenses)
+        elif choice == "3":
+            total_expenses(expenses)
+        elif choice == "4":
+            print("👋 Exiting... Goodbye!")
+            break
+        else:
+            print("❌ Invalid choice. Try again.")
+
+if __name__ == "__main__":
+    main() streamlit as st
 import pandas as pd
 
 # Page configuration
