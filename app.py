@@ -67,7 +67,7 @@ def main():
             print("❌ Invalid choice. Try again.")
 
 if __name__ == "__main__":
-    main() streamlit as st
+    main() 
 import pandas as pd
 
 # Page configuration
