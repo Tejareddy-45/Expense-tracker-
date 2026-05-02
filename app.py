@@ -22,7 +22,7 @@ expenses = load_expenses()
 
 st.set_page_config(page_title="Expense Tracker", layout="wide")
 
-st.title("💰 Advanced Expense Tracker")
+st.title("💰Expense Tracker")
 
 # ------------------ Sidebar ------------------
 st.sidebar.header("📂 Filters")
